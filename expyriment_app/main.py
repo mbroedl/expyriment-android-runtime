@@ -66,6 +66,15 @@ def main():
             if name not in pygame.sysfont.Sysfonts:
                 pygame.sysfont.Sysalias[name] = found
 
+    # assuming expyriment defaults are intended for 160 DPI screens
+    source_dpi=160
+    target_dpi=android.get_dpi()
+    scale=int(target_dpi/source_dpi)
+    expyriment.design.defaults.experiment_text_size=expyriment.design.defaults.experiment_text_size * scale
+    # menu needs to be bigger as it needs to be pressed
+    text_menu_extra=2.5
+    expyriment.io.defaults.textmenu_text_size=int(expyriment.io.defaults.textmenu_text_size * scale * text_menu_extra)
+
     expyriment.control.defaults.event_logging = 0
     exp = expyriment.control.initialize()
     mouse = expyriment.io.Mouse(show_cursor=False)
@@ -79,8 +88,8 @@ def main():
     else:
         items = projects.keys()
         items.sort()
-        menu = expyriment.io.TextMenu("Run experiment:", items, 320,
-                                      scroll_menu=5, mouse=mouse)
+        menu = expyriment.io.TextMenu("Run experiment:", items, int(320 * scale * text_menu_extra),
+                                      scroll_menu=7, mouse=exp.mouse)
         py_file = projects[menu.get()]
         expyriment.control.defaults.event_logging = 1
         expyriment.control.defaults.initialize_delay = 0
